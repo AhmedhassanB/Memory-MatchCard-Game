@@ -2,124 +2,195 @@
 using namespace std;
 
 #include "Card.h"
+#include "StandardCard.h"
 #include "BonusCard.h"
 #include "PenaltyCard.h"
 #include "Player.h"
 #include "Deck.h"
 #include "Game.h"
-// Card Implementation
-Card::Card() : number(0), isFaceUp(false) {}
-Card::Card(int num) : number(num), isFaceUp(false) {}
-Card::~Card() {}
 
-void Card::setNumber(int num) { number = num; }
-void Card::setFaceUp(bool faceUp) { isFaceUp = faceUp; }
-int Card::getNumber() { return number; }
-bool Card::getFaceUp() { return isFaceUp; }
-void Card::display() { cout << (isFaceUp ? to_string(number) : "*"); }
+Card::Card() : value(0), isFaceUp(false) {
+
+}
+Card::Card(int value, bool isFaceUp) : value(value), isFaceUp(isFaceUp) {
+
+}
+Card::~Card() {
+
+}
+
+void Card:: setValue(int v) { value = v; }
+void Card:: setIsfaceUp(bool f) { isFaceUp = f; }
+int Card::getValue() { return value; }
+bool Card::getIsfaceUp() { return isFaceUp; }
+void Card::display() {
+if (isFaceUp) {
+    cout<< value;
+}
+    else{
+        cout<< '*';
+    }
+}
+
+// StandardCard
+
+StandardCard::StandardCard() : Card() {}
+
+StandardCard::StandardCard(int value, bool isFaceUp) : Card(value, isFaceUp) {}
+
+StandardCard::~StandardCard() {}
+void StandardCard::display() {
+    Card::display();
+}
 
 // BonusCard Implementation
 BonusCard::BonusCard() : Card(), bonusPoints(0) {}
-BonusCard::BonusCard(int num, int points) : Card(num), bonusPoints(points) {}
+BonusCard::BonusCard(int value,bool isFaceUp,  int  bonusPoints) : Card(value,isFaceUp), bonusPoints( bonusPoints ) {}
+
 BonusCard::~BonusCard() {}
+
 void BonusCard::setBonusPoints(int points) { bonusPoints = points; }
 int BonusCard::getBonusPoints() { return bonusPoints; }
+// BonusCard display method
 void BonusCard::display() {
-    if (getFaceUp()) {
-        cout << getNumber() << " (Bonus: +" << bonusPoints << ")";
+    if (getIsfaceUp()) {
+        std::cout << "B" << getValue() << "(+" << bonusPoints << ")";
     } else {
-        cout << "*";
+        std::cout << "*";
     }
 }
 
-// PenaltyCard Implementation
 PenaltyCard::PenaltyCard() : Card(), penaltyPoints(0) {}
-PenaltyCard::PenaltyCard(int num, int points) : Card(num), penaltyPoints(points) {}
+
+// PenaltyCard constructor
+PenaltyCard::PenaltyCard(int value, bool isFaceUp, int penaltyPoints)
+    : Card(value, isFaceUp), penaltyPoints(penaltyPoints) {}
+
 PenaltyCard::~PenaltyCard() {}
 void PenaltyCard::setPenaltyPoints(int points) { penaltyPoints = points; }
 int PenaltyCard::getPenaltyPoints() { return penaltyPoints; }
-void PenaltyCard::applyPenalty(Player& player) {
-    player.setScore(player.getScore() - penaltyPoints);
-}
+
+
+// PenaltyCard display method
 void PenaltyCard::display() {
-    if (getFaceUp()) {
-        cout << getNumber() << " (Penalty: -" << penaltyPoints << ")";
+    if (getIsfaceUp()) {
+        std::cout << "P" << getValue() << "(-" << penaltyPoints << ")";
     } else {
-        cout << "*";
+        std::cout << "*";
     }
 }
 
-// Player Implementation
 Player::Player() : name("Player"), score(0) {}
-Player::Player(string playerName) : name(playerName), score(0) {}
+Player::Player(string Pname,int s) : name(Pname), score(s) {}
 Player::~Player() {}
-void Player::setName(string& playerName) { name = playerName; }
-void Player::setScore(int playerScore) { score = playerScore; }
+void Player::setName(string Pname) { name = Pname; }
+void Player::setScore(int s) { score = s; }
 string Player::getName() { return name; }
 int Player::getScore() { return score; }
-void Player::displayScore() { cout << name << "'s Score: " << score << endl; }
+void Player::displayScore() { cout << "Player: " <<name << "Score: " << score << endl; }
 void Player::addScore(int points) { score += points; }
-void Player::deductScore(int points) { score -= points; }
+void Player::deduceScore(int points) { score -= points; }
 
 // Deck Implementation
+// Deck constructor
 Deck::Deck() {
-    grid = new Card**[4];
+    grid = new Card*[4];
     for (int i = 0; i < 4; i++) {
-        grid[i] = new Card*[4];
-        for (int j = 0; j < 4; j++) {
-            grid[i][j] = nullptr;
-        }
+        grid[i] = new Card[4];
     }
-
     deck = new Card*[16];
     for (int i = 0; i < 16; i++) {
-        if (i < 12) deck[i] = new Card(i % 6 + 1);
-        else if (i == 12 || i == 13) deck[i] = new BonusCard(i % 6 + 1, 2);
-        else deck[i] = new PenaltyCard(i % 6 + 1, 1);
+        if (i < 12) {
+            deck[i] = new StandardCard((i % 6) + 1, false);
+        } else if (i == 12 || i == 13) {
+            deck[i] = new BonusCard((i % 6) + 1, false, 2);
+        } else {
+            deck[i] = new PenaltyCard((i % 6) + 1, false, 2);
+        }
     }
-}
-Deck::~Deck() {
-    for (int i = 0; i < 16; i++) delete deck[i];
-    delete[] deck;
-    for (int i = 0; i < 4; i++) delete[] grid[i];
-    delete[] grid;
-}
-void Deck::shuffle() {
-    srand(static_cast<unsigned>(time(0)));
-    vector<int> indices(16);
-    iota(indices.begin(), indices.end(), 0);
-    random_shuffle(indices.begin(), indices.end());
+
+    // Initialize the grid with the deck cards
     int index = 0;
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-            grid[i][j] = deck[indices[index++]];
-}
-void Deck::displayGrid() {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            grid[i][j]->display();
-            cout << " ";
+            grid[i][j] = *deck[index++];
         }
-        cout << endl;
     }
 }
 
-void Deck::flipCard(int row, int col, bool faceUp) {
-    if (row >= 0 && row < 4 && col >= 0 && col < 4 && grid[row][col] != nullptr) {
-        grid[row][col]->setFaceUp(faceUp);
+
+Deck::~Deck() {
+    for (int i = 0; i < 4; i++) delete
+    grid[i];
+    delete[] deck;
+}
+
+void Deck::shuffle() {
+    srand(static_cast<unsigned>(time(0)));
+
+    // Flatten the grid into a 1D array
+    Card temp[16];
+    int index = 0;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            temp[index++] = grid[i][j];
+        }
+    }
+
+    // Shuffle the 1D array
+    for (int i = 15; i > 0; i--) {
+        int j = rand() % (i + 1);
+        Card tempCard = temp[i];
+        temp[i] = temp[j];
+        temp[j] = tempCard;
+    }
+
+    // Place shuffled cards back into the grid
+    index = 0;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            grid[i][j] = temp[index++];
+        }
     }
 }
 
-Card* Deck::getCard(int row, int col) {
+void Deck::displayGrid() {
+    std::cout << "-----------------" << std::endl;
+    for (int i = 0; i < 4; i++) {
+        std::cout << "|";  // Left border for each row
+        for (int j = 0; j < 4; j++) {
+            if (grid[i][j].getIsfaceUp()) {
+                std::cout << " " << grid[i][j].getValue() << " ";
+            } else {
+
+                std::cout << " * ";
+            }
+            std::cout << "|";
+        }
+        std::cout << std::endl;
+        std::cout << "-----------------" << std::endl;
+    }
+}
+
+
+
+void Deck::flipCard(int row, int col, bool IsfaceUp ) {
+    if (row >= 0 && row < 4 && col >= 0 && col < 4 ) {
+        grid[row][col].setIsfaceUp(IsfaceUp);
+    }
+
+}
+
+Card *Deck::getCard(int row, int col) {
     if (row >= 0 && row < 4 && col >= 0 && col < 4) {
-        return grid[row][col];
+        return &grid[row][col];
     }
     return nullptr;
 }
-///////////////////////////////////////////////////
+
 
 // Default Constructor
-Game::Game() : player1("Player 1"), player2("Player 2"), currentPlayer(1) {}
+
 
 // Destructor
 Game::~Game() {}
@@ -128,44 +199,34 @@ Game::~Game() {}
 void Game::initializeGame() {
     std::cout << "Welcome to the 2D Card Matching Game!" << std::endl;
 
-    // Shuffle the deck
     std::cout << "Shuffling cards..." << std::endl;
     deck.shuffle();
 
-    // Display initial grid
     std::cout << "\nInitial Card Grid:" << std::endl;
     deck.displayGrid();
 }
 
-// Handle a single player's turn
 void Game::playTurn() {
     Player& current = (currentPlayer == 1) ? player1 : player2;
 
     std::cout << "\n" << current.getName() << "'s turn!" << std::endl;
 
-    // Input for first card
     int row1, col1;
-    std::cout << "Enter row and column for the first card (e.g., 0 1): ";
-    std::cin >> row1 >> col1;
-
-    // Flip the first card
-    deck.flipCard(row1, col1, true);
-    deck.displayGrid();
-
-    // Input for second card
     int row2, col2;
-    std::cout << "Enter row and column for the second card (e.g., 1 2): ";
+    std::cout << "Enter row and column for the first card: ";
+    std::cin >> row1 >> col1;
+    std::cout << "Enter row and column for the second card: ";
     std::cin >> row2 >> col2;
 
-    // Flip the second card
+    // Flip the first and second cards face-up
+    deck.flipCard(row1, col1, true);
     deck.flipCard(row2, col2, true);
     deck.displayGrid();
 
-    // Check if the two cards match
     Card* card1 = deck.getCard(row1, col1);
     Card* card2 = deck.getCard(row2, col2);
 
-    if (card1 && card2 && card1->getNumber() == card2->getNumber()) {
+    if (card1 && card2 && card1->getValue() == card2->getValue()) {
         std::cout << "It's a match!" << std::endl;
 
         // Handle special cards
@@ -173,43 +234,68 @@ void Game::playTurn() {
             current.addScore(bonusCard->getBonusPoints());
             std::cout << "Bonus! +" << bonusCard->getBonusPoints() << " points." << std::endl;
         } else if (auto* penaltyCard = dynamic_cast<PenaltyCard*>(card1)) {
-            current.deductScore(penaltyCard->getPenaltyPoints());
+            current.deduceScore(penaltyCard->getPenaltyPoints());
             std::cout << "Penalty! -" << penaltyCard->getPenaltyPoints() << " points." << std::endl;
+        } else {
+            current.addScore(10);  // Standard card match, add 10 points
+            std::cout << "Standard match! +10 points." << std::endl;
         }
-
-        current.addScore(10); // Add points for a successful match
     } else {
         std::cout << "Not a match!" << std::endl;
 
-        // Flip cards back face-down
+        // Flip the cards back face-down
         deck.flipCard(row1, col1, false);
         deck.flipCard(row2, col2, false);
     }
+
+    // Display the grid after updating the face-up status
+    deck.displayGrid();
 
     // Switch to the other player
     currentPlayer = (currentPlayer == 1) ? 2 : 1;
 }
 
-// Display the current scores
 void Game::displayScores() {
     player1.displayScore();
     player2.displayScore();
 }
+// Game.cpp
+Game::Game() : player1("Player 1", 0), player2("Player 2", 0) {
+    // Initialize any other members if needed
+}
 
-// Start the game loop
 void Game::start() {
+
     initializeGame();
 
-    // Game loop
-    int turns = 0;
-    while (turns < 8) { // Max 8 turns since there are 16 cards
+    // Game loop: Continue until all cards are face up (matched)
+    while (true) {
         playTurn();
         displayScores();
-        turns++;
+
+        // Check if all cards are face up
+        bool allCardsFaceUp = true;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (!deck.getCard(i, j)->getIsfaceUp()) {
+                    allCardsFaceUp = false; // Found at least one card that is face down
+                    break;
+                }
+            }
+            if (!allCardsFaceUp) {
+                break;
+            }
+        }
+
+        if (allCardsFaceUp) {
+            std::cout << "\nAll cards have been matched!" << std::endl;
+            break; // Exit the game loop when all cards are matched
+        }
     }
 
-    // Determine the winner
+    // Display final scores and the winner
     std::cout << "\nGame Over!" << std::endl;
+    displayScores(); // Display scores for both players
     if (player1.getScore() > player2.getScore()) {
         std::cout << player1.getName() << " wins!" << std::endl;
     } else if (player1.getScore() < player2.getScore()) {
@@ -218,7 +304,6 @@ void Game::start() {
         std::cout << "It's a tie!" << std::endl;
     }
 }
-
 
 
 int main() {

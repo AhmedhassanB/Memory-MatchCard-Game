@@ -13,18 +13,20 @@
 using namespace std;
 class Deck{
 private:
-    Card*** grid;
-    Card** deck;
+
+    // Card** cards;
+    // int size;
+    Card** grid;
+    Card**deck;
 
 public:
     Deck();
+    Deck(Card ** grid,Card*deck);
     ~Deck();
-
-    void addCard(Card* card);
     void shuffle();
     void displayGrid();
     void flipCard(int row, int col, bool faceUp);
-    Card* getCard(int row, int col);
+    Card *getCard(int row, int col);
 };
 
-#endif //MEMORY_MATCHCARD_GAME_DECK_H
+#endif

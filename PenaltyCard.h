@@ -12,17 +12,13 @@ private:
     int penaltyPoints;
 public:
     PenaltyCard();
-
-    PenaltyCard( int number ,int Points);
+    PenaltyCard( int value , bool isFaceUp ,int penaltyPoints);
 
     ~PenaltyCard();
 
     void setPenaltyPoints(int points);
-
     int getPenaltyPoints();
 
-    void applyPenalty(Player& player);
-
-    void display();
+   virtual  void display();
 };
-#endif //MEMORY_MATCHCARD_GAME_PENALTYCARD_H
+#endif

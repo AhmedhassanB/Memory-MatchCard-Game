@@ -8,11 +8,12 @@
 #include <bits/stdc++.h>
 #include "Card.h"
 using namespace std;
-class StandardCard:Card{
+class StandardCard:public Card{
 public:
     StandardCard();
+    StandardCard(int value,bool isFaceUp);
    ~StandardCard();
-    void display();
+   virtual  void display() ;
 };
 
 #endif //MEMORY_MATCHCARD_GAME_STANDARDCARD_H

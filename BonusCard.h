@@ -13,17 +13,11 @@ private:
 public:
 
     BonusCard();
-    BonusCard(int number ,int Points);
+    BonusCard(int value,bool isFaceUp,int bonusPoints);
     ~BonusCard();
-
     void setBonusPoints(int points);
-
     int getBonusPoints();
-
-    // Overridden display method
-    void display() ;
-
-
+   virtual  void display() ;
 };
 
-#endif //MEMORY_MATCHCARD_GAME_BONUSCARD_H
+#endif
