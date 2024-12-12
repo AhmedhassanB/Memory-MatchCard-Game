@@ -1,38 +1,30 @@
-//
-// Created by amh24 on 14/11/2024.
-//
-
 #ifndef MEMORY_MATCHCARD_GAME_PLAYER_H
 #define MEMORY_MATCHCARD_GAME_PLAYER_H
-#include <bits/stdc++.h>
+
+#include <string>
 using namespace std;
-class Player{
-private:
+class Player {
+
     string name;
     int score;
 
 public:
-
     Player();
-
-    Player(string Pname, int s);
-
+    Player( string &name, int score);
     ~Player();
 
-    void setName(string playerName);
-    void setScore(int s);
-
-
+    void setName( string &name);
+    void setScore(int score);
     string getName() ;
     int getScore() ;
-
-
     void displayScore() ;
+
     void addScore(int points);
     void deduceScore(int points);
 };
 
-
-
-
 #endif //MEMORY_MATCHCARD_GAME_PLAYER_H
+
+
+
+

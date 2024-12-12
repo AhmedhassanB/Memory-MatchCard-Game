@@ -49,12 +49,12 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/amh24/Memory MatchCard Game/cmake-build-debug",
-		"source" : "C:/Users/amh24/Memory MatchCard Game"
+		"build" : "C:/Users/amh24/Memory-MatchCard-Game/cmake-build-debug",
+		"source" : "C:/Users/amh24/Memory-MatchCard-Game"
 	},
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 6
+		"minor" : 7
 	}
 }

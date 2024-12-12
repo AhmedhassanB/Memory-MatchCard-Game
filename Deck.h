@@ -1,6 +1,3 @@
-//
-// Created by amh24 on 14/11/2024.
-//
 
 #ifndef MEMORY_MATCHCARD_GAME_DECK_H
 #define MEMORY_MATCHCARD_GAME_DECK_H
@@ -25,6 +22,8 @@ public:
     ~Deck();
     void shuffle();
     void displayGrid();
+    void resetGrid();
+    void removeCard(int row, int col);
     void flipCard(int row, int col, bool faceUp);
     Card *getCard(int row, int col);
 };

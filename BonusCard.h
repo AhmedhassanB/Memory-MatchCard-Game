@@ -17,7 +17,7 @@ public:
     ~BonusCard();
     void setBonusPoints(int points);
     int getBonusPoints();
-   virtual  void display() ;
+    void display() override;
 };
 
 #endif

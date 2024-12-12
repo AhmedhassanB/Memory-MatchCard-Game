@@ -1,24 +1,17 @@
+// PenaltyCard.h
+#ifndef PENALTYCARD_H
+#define PENALTYCARD_H
 
-#ifndef MEMORY_MATCHCARD_GAME_PENALTYCARD_H
-#define MEMORY_MATCHCARD_GAME_PENALTYCARD_H
-#include <bits/stdc++.h>
 #include "Card.h"
-#include "Player.h"
 
-using namespace std;
-class PenaltyCard:public Card{
+class PenaltyCard : public Card {
 
-private:
     int penaltyPoints;
+
 public:
-    PenaltyCard();
-    PenaltyCard( int value , bool isFaceUp ,int penaltyPoints);
-
-    ~PenaltyCard();
-
-    void setPenaltyPoints(int points);
+    PenaltyCard(int value, bool isFaceUp, int penaltyPoints);
     int getPenaltyPoints();
-
-   virtual  void display();
+    void display() override;
 };
+
 #endif

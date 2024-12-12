@@ -1,0 +1,3 @@
+"C:\Users\amh24\CLion 2024.3\bin\cmake\win\x64\bin\cmake.exe" -E rm -f CMakeFiles\Memory_MatchCard_Game.dir/objects.a
+C:\Users\amh24\CLION2~1.3\bin\mingw\bin\ar.exe qc CMakeFiles\Memory_MatchCard_Game.dir/objects.a @CMakeFiles\Memory_MatchCard_Game.dir\objects1.rsp
+C:\Users\amh24\CLION2~1.3\bin\mingw\bin\G__~1.EXE -g -Wl,--whole-archive CMakeFiles\Memory_MatchCard_Game.dir/objects.a -Wl,--no-whole-archive -o Memory_MatchCard_Game.exe -Wl,--out-implib,libMemory_MatchCard_Game.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Memory_MatchCard_Game.dir\linkLibs.rsp

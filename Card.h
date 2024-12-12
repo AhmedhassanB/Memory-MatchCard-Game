@@ -1,8 +1,9 @@
+// Card.h
 #ifndef CARD_H
 #define CARD_H
 
 class Card {
-private:
+protected:
     int value;
     bool isFaceUp;
 
@@ -16,9 +17,9 @@ public:
     int getValue();
     bool getIsfaceUp();
 
+    void reveal();
+    void hide();
     virtual void display();
-
-
 };
 
 #endif
