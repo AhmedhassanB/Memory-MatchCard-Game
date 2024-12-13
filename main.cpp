@@ -24,34 +24,38 @@ void Card:: setIsfaceUp(bool f) { isFaceUp = f; }
 int Card::getValue() { return value; }
 bool Card::getIsfaceUp() { return isFaceUp; }
 void Card::display() {
-if (isFaceUp) {
-    cout<< value;
-}
-    else{
-        cout<< '*';
+    if (isFaceUp) {
+        if (value != 7 && value != 8)
+            std::cout << value;
+        else if (value == 7) {
+            dynamic_cast<BonusCard*>(this)->display();
+        } else if (value == 8) {
+            dynamic_cast<PenaltyCard*>(this)->display();
+        }
+    } else {
+        std::cout << "*";
     }
 }
 
-// StandardCard
 
 StandardCard::StandardCard() : Card() {}
 
 StandardCard::StandardCard(int value, bool isFaceUp) : Card(value, isFaceUp) {}
 
-StandardCard::~StandardCard() {}
+
 void StandardCard::display() {
     Card::display();
 }
 
-// BonusCard Implementation
+
 BonusCard::BonusCard() : Card(), bonusPoints(0) {}
 BonusCard::BonusCard(int value,bool isFaceUp,  int  bonusPoints) : Card(value,isFaceUp), bonusPoints( bonusPoints ) {}
 
 BonusCard::~BonusCard() {}
 
-void BonusCard::setBonusPoints(int points) { bonusPoints = points; }
+void BonusCard::setBonusPoints(int points) { bonusPoints ; }
 int BonusCard::getBonusPoints() { return bonusPoints; }
-// BonusCard display method
+
 void BonusCard::display() {
     if (getIsfaceUp()) {
         std::cout << "B" << getValue() << "(+" << bonusPoints << ")";
@@ -60,18 +64,18 @@ void BonusCard::display() {
     }
 }
 
-PenaltyCard::PenaltyCard() : Card(), penaltyPoints(0) {}
 
-// PenaltyCard constructor
+
+
 PenaltyCard::PenaltyCard(int value, bool isFaceUp, int penaltyPoints)
     : Card(value, isFaceUp), penaltyPoints(penaltyPoints) {}
 
 PenaltyCard::~PenaltyCard() {}
-void PenaltyCard::setPenaltyPoints(int points) { penaltyPoints = points; }
+void PenaltyCard::setPenaltyPoints(int points) { penaltyPoints; }
 int PenaltyCard::getPenaltyPoints() { return penaltyPoints; }
 
 
-// PenaltyCard display method
+
 void PenaltyCard::display() {
     if (getIsfaceUp()) {
         std::cout << "P" << getValue() << "(-" << penaltyPoints << ")";
@@ -87,29 +91,27 @@ void Player::setName(string Pname) { name = Pname; }
 void Player::setScore(int s) { score = s; }
 string Player::getName() { return name; }
 int Player::getScore() { return score; }
-void Player::displayScore() { cout << "Player: " <<name << "Score: " << score << endl; }
+void Player::displayScore() { cout << "Player: " <<name << " Score: " << score << endl; }
 void Player::addScore(int points) { score += points; }
 void Player::deduceScore(int points) { score -= points; }
-
-// Deck Implementation
-// Deck constructor
 Deck::Deck() {
     grid = new Card*[4];
     for (int i = 0; i < 4; i++) {
         grid[i] = new Card[4];
     }
     deck = new Card*[16];
+
     for (int i = 0; i < 16; i++) {
-        if (i < 12) {
+        if (i !=7&&i!=8) {
             deck[i] = new StandardCard((i % 6) + 1, false);
-        } else if (i == 12 || i == 13) {
-            deck[i] = new BonusCard((i % 6) + 1, false, 2);
-        } else {
-            deck[i] = new PenaltyCard((i % 6) + 1, false, 2);
+        }  if (i == 7) {
+            deck[i] = new BonusCard(7, false, 2);
+        }  if (i == 8){
+            deck[i] = new PenaltyCard(8, false, 2);
         }
     }
 
-    // Initialize the grid with the deck cards
+
     int index = 0;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -117,18 +119,34 @@ Deck::Deck() {
         }
     }
 }
-
+Card& Card::operator=(std::nullptr_t null) {
+    value = 0;
+    isFaceUp = false;
+    return *this;
+}
+void Deck::removeCards(Card* c1, Card* c2) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (&grid[i][j] == c1 || &grid[i][j] == c2) {
+                grid[i][j] = nullptr; // Set the matched card to nullptr
+            }
+        }
+    }
+}
+bool Card::operator!=(std::nullptr_t null) const {
+    return value != 0 || isFaceUp != false;
+}
 
 Deck::~Deck() {
-    for (int i = 0; i < 4; i++) delete
-    grid[i];
+    for (int i = 0; i < 4; i++) delete[] grid[i];
+    delete[] grid;
     delete[] deck;
 }
 
 void Deck::shuffle() {
     srand(static_cast<unsigned>(time(0)));
 
-    // Flatten the grid into a 1D array
+
     Card temp[16];
     int index = 0;
     for (int i = 0; i < 4; i++) {
@@ -137,7 +155,7 @@ void Deck::shuffle() {
         }
     }
 
-    // Shuffle the 1D array
+
     for (int i = 15; i > 0; i--) {
         int j = rand() % (i + 1);
         Card tempCard = temp[i];
@@ -145,7 +163,7 @@ void Deck::shuffle() {
         temp[j] = tempCard;
     }
 
-    // Place shuffled cards back into the grid
+
     index = 0;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -154,34 +172,44 @@ void Deck::shuffle() {
     }
 }
 
+
+
 void Deck::displayGrid() {
     std::cout << "-----------------" << std::endl;
     for (int i = 0; i < 4; i++) {
-        std::cout << "|";  // Left border for each row
+        std::cout << " | ";
         for (int j = 0; j < 4; j++) {
-            if (grid[i][j].getIsfaceUp()) {
-                std::cout << " " << grid[i][j].getValue() << " ";
+            if (grid[i][j] != nullptr) {
+                grid[i][j].display();
             } else {
-
-                std::cout << " * ";
+                std::cout << " "; // Display an empty space for removed cards
             }
-            std::cout << "|";
+            std::cout << " | ";
         }
         std::cout << std::endl;
         std::cout << "-----------------" << std::endl;
     }
 }
-
-
-
-void Deck::flipCard(int row, int col, bool IsfaceUp ) {
-    if (row >= 0 && row < 4 && col >= 0 && col < 4 ) {
-        grid[row][col].setIsfaceUp(IsfaceUp);
+/*
+void Deck::flipCard(int row, int col, bool faceUp) {
+    if (row >= 0 && row < 4 && col >= 0 && col < 4 && grid[row][col] != nullptr) {
+        grid[row][col].setIsfaceUp(faceUp);
     }
+}*/
 
+
+
+void Deck::flipCard(int row, int col, bool faceUp) {
+    if (row >= 0 && row < 4 && col >= 0 && col < 4 && grid[row][col] != nullptr) {
+        if (faceUp) {
+            grid[row][col].reveal();
+        } else {
+            grid[row][col].hide();
+        }
+    }
 }
 
-Card *Deck::getCard(int row, int col) {
+Card* Deck::getCard(int row, int col) {
     if (row >= 0 && row < 4 && col >= 0 && col < 4) {
         return &grid[row][col];
     }
@@ -189,13 +217,132 @@ Card *Deck::getCard(int row, int col) {
 }
 
 
-// Default Constructor
-
-
-// Destructor
 Game::~Game() {}
 
-// Initialize the game
+void Game::playTurn() {
+    Player& current = (currentPlayer == 1) ? player1 : player2;
+
+    std::cout << "\n" << current.getName() << "'s turn!" << std::endl;
+    currentPlayer = (currentPlayer == 1) ? 2 : 1;
+
+
+}
+
+void Game::scoring() {
+    Player& current = (currentPlayer == 1) ? player1 : player2;
+    int row1, col1;
+    int row2, col2;
+
+    while (true) {
+        try {
+            std::cout << "Enter row and column for the first card: ";
+            std::cin >> row1 >> col1;
+            if (row1 < 1 || row1 > 4 || col1 < 1 || col1 > 4) {
+                throw std::out_of_range("Invalid input. Row and column values must be between 1 and 4.");
+            }
+
+            std::cout << "Enter row and column for the second card: ";
+            std::cin >> row2 >> col2;
+            if (row2 < 1 || row2 > 4 || col2 < 1 || col2 > 4) {
+                throw std::out_of_range("Invalid input. Row and column values must be between 1 and 4.");
+            }
+
+            Card* card1 = deck.getCard(row1 - 1, col1 - 1);
+            Card* card2 = deck.getCard(row2 - 1, col2 - 1);
+
+            if (card1 == nullptr || card2 == nullptr) {
+                std::cout << "One or both of the selected cards have been removed. Please try again." << std::endl;
+                continue;
+            }
+
+            if (card1->getIsfaceUp()) {
+                std::cout << "The first card is already face up. Please try again." << std::endl;
+                continue;
+            }
+
+            if (card2->getIsfaceUp()) {
+                std::cout << "The second card is already face up. Please try again." << std::endl;
+                continue;
+            }
+
+            if (row1 == row2 && col1 == col2) {
+                std::cout << "You have selected the same card twice. Please try again." << std::endl;
+                continue;
+            }
+
+            break; // Valid input, exit the loop
+        } catch (const std::out_of_range& e) {
+            std::cout << e.what() << std::endl;
+        } catch (const std::exception& e) {
+            std::cout << "An error occurred: " << e.what() << std::endl;
+        }
+    }
+
+    // Flip the first and second cards face-up
+    deck.flipCard(row1 - 1, col1 - 1, true);
+    deck.flipCard(row2 - 1, col2 - 1, true);
+    deck.displayGrid();
+
+    Card* card1 = deck.getCard(row1 - 1, col1 - 1);
+    Card* card2 = deck.getCard(row2 - 1, col2 - 1);
+
+    if (card1->getValue() == card2->getValue()) {
+        std::cout << "It's a match!" << std::endl;
+
+        if (dynamic_cast<BonusCard*>(card1) && dynamic_cast<BonusCard*>(card2)) {
+            int choice;
+            std::cout << "You have two bonus cards! Choose an option:\n1. +2 points\n2. +1 point and take another turn\n";
+            std::cin >> choice;
+            if (choice == 1) {
+                current.addScore(2);
+                std::cout << "Bonus! +2 points." << std::endl;
+            } else {
+                current.addScore(1);
+                std::cout << "Bonus! +1 point. Take another turn." << std::endl;
+                playTurn();
+                return;
+            }
+        } else if (dynamic_cast<PenaltyCard*>(card1) && dynamic_cast<PenaltyCard*>(card2)) {
+            int choice;
+            std::cout << "You have two penalty cards! Choose an option:\n1. Lose 2 points\n2. Lose 1 point and skip the next turn\n";
+            std::cin >> choice;
+            if (choice == 1) {
+                current.deduceScore(2);
+                std::cout << "Penalty! -2 points." << std::endl;
+            } else {
+                current.deduceScore(1);
+                std::cout << "Penalty! -1 point. Skip the next turn." << std::endl;
+                currentPlayer = (currentPlayer == 1) ? 2 : 1;
+                return;
+            }
+        } else if (dynamic_cast<BonusCard*>(card1) || dynamic_cast<BonusCard*>(card2)) {
+            current.addScore(1);
+            std::cout << "Bonus! +1 point." << std::endl;
+            deck.removeCards(dynamic_cast<BonusCard*>(card1) ? card1 : card2, nullptr);
+        } else if (dynamic_cast<PenaltyCard*>(card1) || dynamic_cast<PenaltyCard*>(card2)) {
+            current.deduceScore(1);
+            std::cout << "Penalty! -1 point." << std::endl;
+        } else {
+            current.addScore(1);  // Standard card match, add 1 point
+            std::cout << "Standard match! +1 point." << std::endl;
+        }
+        deck.flipCard(row1 - 1, col1 - 1, true);
+        deck.flipCard(row2 - 1, col2 - 1, true);
+        deck.removeCards(card1, card2);
+    } else {
+        std::cout << "Not a match!" << std::endl;
+
+        // Flip the cards back face-down
+        deck.flipCard(row1 - 1, col1 - 1, false);
+        deck.flipCard(row2 - 1, col2 - 1, false);
+    }
+    deck.displayGrid();
+    playTurn();
+}
+
+
+
+
 void Game::initializeGame() {
     std::cout << "Welcome to the 2D Card Matching Game!" << std::endl;
 
@@ -204,113 +351,64 @@ void Game::initializeGame() {
 
     std::cout << "\nInitial Card Grid:" << std::endl;
     deck.displayGrid();
+
 }
 
-void Game::playTurn() {
-    Player& current = (currentPlayer == 1) ? player1 : player2;
-
-    std::cout << "\n" << current.getName() << "'s turn!" << std::endl;
-
-    int row1, col1;
-    int row2, col2;
-    std::cout << "Enter row and column for the first card: ";
-    std::cin >> row1 >> col1;
-    std::cout << "Enter row and column for the second card: ";
-    std::cin >> row2 >> col2;
-
-    // Flip the first and second cards face-up
-    deck.flipCard(row1, col1, true);
-    deck.flipCard(row2, col2, true);
-    deck.displayGrid();
-
-    Card* card1 = deck.getCard(row1, col1);
-    Card* card2 = deck.getCard(row2, col2);
-
-    if (card1 && card2 && card1->getValue() == card2->getValue()) {
-        std::cout << "It's a match!" << std::endl;
-
-        // Handle special cards
-        if (auto* bonusCard = dynamic_cast<BonusCard*>(card1)) {
-            current.addScore(bonusCard->getBonusPoints());
-            std::cout << "Bonus! +" << bonusCard->getBonusPoints() << " points." << std::endl;
-        } else if (auto* penaltyCard = dynamic_cast<PenaltyCard*>(card1)) {
-            current.deduceScore(penaltyCard->getPenaltyPoints());
-            std::cout << "Penalty! -" << penaltyCard->getPenaltyPoints() << " points." << std::endl;
-        } else {
-            current.addScore(10);  // Standard card match, add 10 points
-            std::cout << "Standard match! +10 points." << std::endl;
-        }
-    } else {
-        std::cout << "Not a match!" << std::endl;
-
-        // Flip the cards back face-down
-        deck.flipCard(row1, col1, false);
-        deck.flipCard(row2, col2, false);
-    }
-
-    // Display the grid after updating the face-up status
-    deck.displayGrid();
-
-    // Switch to the other player
-    currentPlayer = (currentPlayer == 1) ? 2 : 1;
-}
 
 void Game::displayScores() {
     player1.displayScore();
     player2.displayScore();
 }
-// Game.cpp
-Game::Game() : player1("Player 1", 0), player2("Player 2", 0) {
-    // Initialize any other members if needed
-}
 
+Game::Game() {
+   string x,y;
+    cout<<"Enter the name of the first player: ";
+    cin>>x;
+    player1.setName(x);
+    player1.setScore(0);
+    cout<<"Enter the name of the second player: ";
+    cin>>y;
+    player2.setName(y);
+    player2.setScore(0);
+}
+bool Deck::allCardsFlipped() {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (!grid[i][j].getIsfaceUp()) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
 void Game::start() {
-
     initializeGame();
-
-    // Game loop: Continue until all cards are face up (matched)
     while (true) {
-        playTurn();
         displayScores();
-
-        // Check if all cards are face up
-        bool allCardsFaceUp = true;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (!deck.getCard(i, j)->getIsfaceUp()) {
-                    allCardsFaceUp = false; // Found at least one card that is face down
-                    break;
-                }
-            }
-            if (!allCardsFaceUp) {
-                break;
-            }
-        }
-
-        if (allCardsFaceUp) {
-            std::cout << "\nAll cards have been matched!" << std::endl;
-            break; // Exit the game loop when all cards are matched
+        scoring();
+        if (deck.allCardsFlipped()) {
+            break;
         }
     }
+        displayScores();
+        if (player1.getScore() > player2.getScore()) {
+            std::cout << player1.getName() << " wins!" << std::endl;
+        } else if (player1.getScore() < player2.getScore()) {
+            std::cout << player2.getName() << " wins!" << std::endl;
+        } else {
+            std::cout << "It's a tie!" << std::endl;
+        }
 
-    // Display final scores and the winner
-    std::cout << "\nGame Over!" << std::endl;
-    displayScores(); // Display scores for both players
-    if (player1.getScore() > player2.getScore()) {
-        std::cout << player1.getName() << " wins!" << std::endl;
-    } else if (player1.getScore() < player2.getScore()) {
-        std::cout << player2.getName() << " wins!" << std::endl;
-    } else {
-        std::cout << "It's a tie!" << std::endl;
     }
-}
+
+
+
 
 
 int main() {
 
     Game game;
     game.start();
-
     return 0;
 }
 

@@ -12,6 +12,7 @@ public:
     void playTurn();
     void displayScores();
     void start();
+    void scoring();
 
 private:
     Deck deck;
