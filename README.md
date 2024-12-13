@@ -1,4 +1,4 @@
-Memory-MatchCard-Game
+#Memory-MatchCard-Game
 The Memory Match Card Game is a console-based, turn-based game developed as part of the Programming III - Winter Semester 2024/2025 course at the German International University. Players take turns revealing cards from a grid to match pairs and score points. The game includes special card rules, turn-based logic, and dynamic scoring mechanics.
 Features
 Turn-Based Gameplay: Two players take alternating turns revealing cards.
@@ -9,7 +9,7 @@ Dynamic Scoring: Points are awarded or deducted based on the type and match of r
 Interactive Console Output: The game visually updates the grid and displays player scores.
 Endgame Conditions: Determines the winner based on the highest score or announces a tie.
 Gameplay
-General Flow
+#General Flow
 Grid Visualization: The grid is displayed with all cards hidden (*).
 Player Information: Displays player names and scores, indicating whose turn it is.
 Player Move:
@@ -18,7 +18,7 @@ The selected cards are flipped, and any score updates are applied.
 Turn Switching:
 Players press Enter to proceed after their turn.
 The grid hides unmatched cards, and the next player takes their turn.
-Game End:
+#Game End:
 The game ends when all pairs of cards are matched and removed.
 Scores are compared, and the winner is announced (or a tie is declared).
 Scoring Rules
@@ -43,7 +43,7 @@ Player chooses between:
 Both cards are removed.
 Bonus & Penalty Combination:
 Both cards are removed with no effect on the score.
-Class Structure
+#Class Structure
 1. Card Class and Subclasses
 StandardCard, BonusCard, PenaltyCard:
 Methods: reveal(), hide(), display().
