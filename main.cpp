@@ -36,6 +36,17 @@ void Card::display() {
         std::cout << "*";
     }
 }
+void Card::reveal() {
+    isFaceUp = true;
+}
+
+void Card::hide() {
+    isFaceUp = false;
+}
+
+bool Card::getIsFaceUp() {
+    return isFaceUp;
+}
 
 StandardCard::StandardCard() : Card() {}
 StandardCard::StandardCard(int value, bool isFaceUp) : Card(value, isFaceUp) {}
@@ -269,6 +280,10 @@ void Game::playTurn() {
 //             std::cout << "An error occurred: " << e.what() << std::endl;
 //         }
 //     }
+// // Prompt the current player to press Enter to hide the cards again
+// std::cout << "Press Enter to hide the cards and switch turns...";
+// std::cin.ignore();
+// std::cin.get();
 //
 //     // Flip the first and second cards face-up
 //     deck.flipCard(row1 - 1, col1 - 1, true);
@@ -331,6 +346,8 @@ void Game::playTurn() {
 //     deck.displayGrid();
 //     playTurn();
 // }
+
+
 void Game::scoring() {
     Player& current = (currentPlayer == 1) ? player1 : player2;
     int row1, col1;
@@ -358,12 +375,12 @@ void Game::scoring() {
                 continue;
             }
 
-            if (card1->getIsFaceUp()) {
+            if (card1->getIsfaceUp()) {
                 std::cout << "The first card is already face up. Please try again." << std::endl;
                 continue;
             }
 
-            if (card2->getIsFaceUp()) {
+            if (card2->getIsfaceUp()) {
                 std::cout << "The second card is already face up. Please try again." << std::endl;
                 continue;
             }
@@ -392,6 +409,7 @@ void Game::scoring() {
     if (card1->getValue() == card2->getValue()) {
         std::cout << "It's a match!" << std::endl;
         current.addScore(1);  // Standard card match, add 1 point
+        deck.removeCards(card1, card2);
     } else {
         std::cout << "Not a match!" << std::endl;
     }
@@ -409,8 +427,6 @@ void Game::scoring() {
     // Switch turns between the two players
     currentPlayer = (currentPlayer == 1) ? 2 : 1;
 }
-
-
 
 void Game::initializeGame() {
     std::cout << "Welcome to the 2D Card Matching Game!" << std::endl;
@@ -443,7 +459,7 @@ Game::Game() {
 bool Deck::allCardsFlipped() {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            if (!grid[i][j].getIsfaceUp()) {
+            if (grid[i][j] != nullptr && !grid[i][j].getIsFaceUp()) {
                 return false;
             }
         }

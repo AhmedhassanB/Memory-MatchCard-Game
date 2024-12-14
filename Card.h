@@ -14,10 +14,10 @@ public:
     bool getIsfaceUp();
     virtual void display();
 
-    void reveal() { isFaceUp = true; }
-    void hide() { isFaceUp = false; }
-    bool getIsFaceUp() const { return isFaceUp; }
-    int getValue() const { return value; }
+    void reveal();
+    void hide();
+    bool getIsFaceUp();
+    int getValue()const ;
 
 
     Card &operator=(nullptr_t null);
