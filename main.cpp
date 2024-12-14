@@ -220,6 +220,117 @@ void Game::playTurn() {
     currentPlayer = (currentPlayer == 1) ? 2 : 1;
 }
 
+// void Game::scoring() {
+//     Player& current = (currentPlayer == 1) ? player1 : player2;
+//     int row1, col1;
+//     int row2, col2;
+//
+//     while (true) {
+//         try {
+//             std::cout << "Enter row and column for the first card: ";
+//             std::cin >> row1 >> col1;
+//             if (row1 < 1 || row1 > 4 || col1 < 1 || col1 > 4) {
+//                 throw std::out_of_range("Invalid input. Row and column values must be between 1 and 4.");
+//             }
+//
+//             std::cout << "Enter row and column for the second card: ";
+//             std::cin >> row2 >> col2;
+//             if (row2 < 1 || row2 > 4 || col2 < 1 || col2 > 4) {
+//                 throw std::out_of_range("Invalid input. Row and column values must be between 1 and 4.");
+//             }
+//
+//             Card* card1 = deck.getCard(row1 - 1, col1 - 1);
+//             Card* card2 = deck.getCard(row2 - 1, col2 - 1);
+//
+//             if (card1 == nullptr || card2 == nullptr) {
+//                 std::cout << "One or both of the selected cards have been removed. Please try again." << std::endl;
+//                 continue;
+//             }
+//
+//             if (card1->getIsfaceUp()) {
+//                 std::cout << "The first card is already face up. Please try again." << std::endl;
+//                 continue;
+//             }
+//
+//             if (card2->getIsfaceUp()) {
+//                 std::cout << "The second card is already face up. Please try again." << std::endl;
+//                 continue;
+//             }
+//
+//             if (row1 == row2 && col1 == col2) {
+//                 std::cout << "You have selected the same card twice. Please try again." << std::endl;
+//                 continue;
+//             }
+//
+//             break; // Valid input, exit the loop
+//         } catch (const std::out_of_range& e) {
+//             std::cout << e.what() << std::endl;
+//         } catch (const std::exception& e) {
+//             std::cout << "An error occurred: " << e.what() << std::endl;
+//         }
+//     }
+//
+//     // Flip the first and second cards face-up
+//     deck.flipCard(row1 - 1, col1 - 1, true);
+//     deck.flipCard(row2 - 1, col2 - 1, true);
+//     deck.displayGrid();
+//
+//     Card* card1 = deck.getCard(row1 - 1, col1 - 1);
+//     Card* card2 = deck.getCard(row2 - 1, col2 - 1);
+//
+//     if (card1->getValue() == card2->getValue()) {
+//         std::cout << "It's a match!" << std::endl;
+//
+//         if (dynamic_cast<BonusCard*>(card1) && dynamic_cast<BonusCard*>(card2)) {
+//             int choice;
+//             std::cout << "You have two bonus cards! Choose an option:\n1. +2 points\n2. +1 point and take another turn\n";
+//             std::cin >> choice;
+//             if (choice == 1) {
+//                 current.addScore(2);
+//                 std::cout << "Bonus! +2 points." << std::endl;
+//             } else {
+//                 current.addScore(1);
+//                 std::cout << "Bonus! +1 point. Take another turn." << std::endl;
+//                 playTurn();
+//                 return;
+//             }
+//         } else if (dynamic_cast<PenaltyCard*>(card1) && dynamic_cast<PenaltyCard*>(card2)) {
+//             int choice;
+//             std::cout << "You have two penalty cards! Choose an option:\n1. Lose 2 points\n2. Lose 1 point and skip the next turn\n";
+//             std::cin >> choice;
+//             if (choice == 1) {
+//                 current.deduceScore(2);
+//                 std::cout << "Penalty! -2 points." << std::endl;
+//             } else {
+//                 current.deduceScore(1);
+//                 std::cout << "Penalty! -1 point. Skip the next turn." << std::endl;
+//                 currentPlayer = (currentPlayer == 1) ? 2 : 1;
+//                 return;
+//             }
+//         } else if (dynamic_cast<BonusCard*>(card1) || dynamic_cast<BonusCard*>(card2)) {
+//             current.addScore(1);
+//             std::cout << "Bonus! +1 point." << std::endl;
+//             deck.removeCards(dynamic_cast<BonusCard*>(card1) ? card1 : card2, nullptr);
+//         } else if (dynamic_cast<PenaltyCard*>(card1) || dynamic_cast<PenaltyCard*>(card2)) {
+//             current.deduceScore(1);
+//             std::cout << "Penalty! -1 point." << std::endl;
+//         } else {
+//             current.addScore(1);  // Standard card match, add 1 point
+//             std::cout << "Standard match! +1 point." << std::endl;
+//         }
+//         deck.flipCard(row1 - 1, col1 - 1, true);
+//         deck.flipCard(row2 - 1, col2 - 1, true);
+//         deck.removeCards(card1, card2);
+//     } else {
+//         std::cout << "Not a match!" << std::endl;
+//
+//         // Flip the cards back face-down
+//         deck.flipCard(row1 - 1, col1 - 1, false);
+//         deck.flipCard(row2 - 1, col2 - 1, false);
+//     }
+//     deck.displayGrid();
+//     playTurn();
+// }
 void Game::scoring() {
     Player& current = (currentPlayer == 1) ? player1 : player2;
     int row1, col1;
@@ -247,12 +358,12 @@ void Game::scoring() {
                 continue;
             }
 
-            if (card1->getIsfaceUp()) {
+            if (card1->getIsFaceUp()) {
                 std::cout << "The first card is already face up. Please try again." << std::endl;
                 continue;
             }
 
-            if (card2->getIsfaceUp()) {
+            if (card2->getIsFaceUp()) {
                 std::cout << "The second card is already face up. Please try again." << std::endl;
                 continue;
             }
@@ -280,58 +391,24 @@ void Game::scoring() {
 
     if (card1->getValue() == card2->getValue()) {
         std::cout << "It's a match!" << std::endl;
-
-        if (dynamic_cast<BonusCard*>(card1) && dynamic_cast<BonusCard*>(card2)) {
-            int choice;
-            std::cout << "You have two bonus cards! Choose an option:\n1. +2 points\n2. +1 point and take another turn\n";
-            std::cin >> choice;
-            if (choice == 1) {
-                current.addScore(2);
-                std::cout << "Bonus! +2 points." << std::endl;
-            } else {
-                current.addScore(1);
-                std::cout << "Bonus! +1 point. Take another turn." << std::endl;
-                playTurn();
-                return;
-            }
-        } else if (dynamic_cast<PenaltyCard*>(card1) && dynamic_cast<PenaltyCard*>(card2)) {
-            int choice;
-            std::cout << "You have two penalty cards! Choose an option:\n1. Lose 2 points\n2. Lose 1 point and skip the next turn\n";
-            std::cin >> choice;
-            if (choice == 1) {
-                current.deduceScore(2);
-                std::cout << "Penalty! -2 points." << std::endl;
-            } else {
-                current.deduceScore(1);
-                std::cout << "Penalty! -1 point. Skip the next turn." << std::endl;
-                currentPlayer = (currentPlayer == 1) ? 2 : 1;
-                return;
-            }
-        } else if (dynamic_cast<BonusCard*>(card1) || dynamic_cast<BonusCard*>(card2)) {
-            current.addScore(1);
-            std::cout << "Bonus! +1 point." << std::endl;
-            deck.removeCards(dynamic_cast<BonusCard*>(card1) ? card1 : card2, nullptr);
-        } else if (dynamic_cast<PenaltyCard*>(card1) || dynamic_cast<PenaltyCard*>(card2)) {
-            current.deduceScore(1);
-            std::cout << "Penalty! -1 point." << std::endl;
-        } else {
-            current.addScore(1);  // Standard card match, add 1 point
-            std::cout << "Standard match! +1 point." << std::endl;
-        }
-        deck.flipCard(row1 - 1, col1 - 1, true);
-        deck.flipCard(row2 - 1, col2 - 1, true);
-        deck.removeCards(card1, card2);
+        current.addScore(1);  // Standard card match, add 1 point
     } else {
         std::cout << "Not a match!" << std::endl;
-
-        // Flip the cards back face-down
-        deck.flipCard(row1 - 1, col1 - 1, false);
-        deck.flipCard(row2 - 1, col2 - 1, false);
     }
-    deck.displayGrid();
-    playTurn();
-}
 
+    // Prompt the current player to press Enter to hide the cards again
+    std::cout << "Press Enter to hide the cards and switch turns...";
+    std::cin.ignore();
+    std::cin.get();
+
+    // Flip the cards back face-down
+    deck.flipCard(row1 - 1, col1 - 1, false);
+    deck.flipCard(row2 - 1, col2 - 1, false);
+    deck.displayGrid();
+
+    // Switch turns between the two players
+    currentPlayer = (currentPlayer == 1) ? 2 : 1;
+}
 
 
 
