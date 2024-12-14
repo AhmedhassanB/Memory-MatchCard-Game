@@ -11,6 +11,6 @@
 -- Check for working CXX compiler: C:/Users/amh24/CLion 2024.3/bin/mingw/bin/g++.exe - skipped
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
--- Configuring done (21.4s)
--- Generating done (0.1s)
+-- Configuring done (9.6s)
+-- Generating done (0.0s)
 -- Build files have been written to: C:/Users/amh24/Memory-MatchCard-Game/cmake-build-debug

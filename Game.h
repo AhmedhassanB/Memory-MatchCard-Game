@@ -13,6 +13,7 @@ public:
     void displayScores();
     void start();
     void scoring();
+    void displayPlayerInfo();
 
 private:
     Deck deck;

@@ -37,16 +37,16 @@ void Card::display() {
     }
 }
 
-
 StandardCard::StandardCard() : Card() {}
-
 StandardCard::StandardCard(int value, bool isFaceUp) : Card(value, isFaceUp) {}
-
-
+StandardCard::~StandardCard() {}
 void StandardCard::display() {
-    Card::display();
+    if (getIsFaceUp()) {
+        std::cout << "StandardCard: " << getValue() << std::endl;
+    } else {
+        std::cout << "StandardCard: Face down" << std::endl;
+    }
 }
-
 
 BonusCard::BonusCard() : Card(), bonusPoints(0) {}
 BonusCard::BonusCard(int value,bool isFaceUp,  int  bonusPoints) : Card(value,isFaceUp), bonusPoints( bonusPoints ) {}
@@ -190,12 +190,6 @@ void Deck::displayGrid() {
         std::cout << "-----------------" << std::endl;
     }
 }
-/*
-void Deck::flipCard(int row, int col, bool faceUp) {
-    if (row >= 0 && row < 4 && col >= 0 && col < 4 && grid[row][col] != nullptr) {
-        grid[row][col].setIsfaceUp(faceUp);
-    }
-}*/
 
 
 
@@ -217,15 +211,13 @@ Card* Deck::getCard(int row, int col) {
 }
 
 
-Game::~Game() {}
-
+Game::~Game() {
+}
 void Game::playTurn() {
+    displayPlayerInfo(); // Display the current player's name and score
     Player& current = (currentPlayer == 1) ? player1 : player2;
-
     std::cout << "\n" << current.getName() << "'s turn!" << std::endl;
     currentPlayer = (currentPlayer == 1) ? 2 : 1;
-
-
 }
 
 void Game::scoring() {
@@ -401,6 +393,11 @@ void Game::start() {
 
     }
 
+void Game::displayPlayerInfo() {
+    std::cout << "Player 1: " << player1.getName() << " - Score: " << player1.getScore() << std::endl;
+    std::cout << "Player 2: " << player2.getName() << " - Score: " << player2.getScore() << std::endl;
+    std::cout << "Current turn: " << (currentPlayer == 1 ? player1.getName() : player2.getName()) << std::endl;
+}
 
 
 
