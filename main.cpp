@@ -472,19 +472,19 @@ void Game::start() {
         displayScores();
         scoring();
         if (deck.allCardsFlipped()) {
+            std::cout << "All cards have been matched. The game has ended!" << std::endl;
             break;
         }
     }
-        displayScores();
-        if (player1.getScore() > player2.getScore()) {
-            std::cout << player1.getName() << " wins!" << std::endl;
-        } else if (player1.getScore() < player2.getScore()) {
-            std::cout << player2.getName() << " wins!" << std::endl;
-        } else {
-            std::cout << "It's a tie!" << std::endl;
-        }
-
+    displayScores();
+    if (player1.getScore() > player2.getScore()) {
+        std::cout << player1.getName() << " wins with a score of " << player1.getScore() << "!" << std::endl;
+    } else if (player1.getScore() < player2.getScore()) {
+        std::cout << player2.getName() << " wins with a score of " << player2.getScore() << "!" << std::endl;
+    } else {
+        std::cout << "It's a tie! Both players have a score of " << player1.getScore() << "." << std::endl;
     }
+}
 
 void Game::displayPlayerInfo() {
     std::cout << "Player 1: " << player1.getName() << " - Score: " << player1.getScore() << std::endl;
