@@ -25,14 +25,9 @@ int Card::getValue() { return value; }
 bool Card::getIsfaceUp() { return isFaceUp; }
 void Card::display() {
     if (isFaceUp) {
-        if (value != 7 && value != 8)
-            std::cout << value;
-        else if (value == 7) {
-            dynamic_cast<BonusCard*>(this)->display();
-        } else if (value == 8) {
-            dynamic_cast<PenaltyCard*>(this)->display();
-        }
-    } else {
+        cout<<value;
+    }
+     else {
         std::cout << "*";
     }
 }
@@ -113,15 +108,16 @@ Deck::Deck() {
     deck = new Card*[16];
 
     for (int i = 0; i < 16; i++) {
-        if (i !=7&&i!=8) {
+        if (i < 6) {
             deck[i] = new StandardCard((i % 6) + 1, false);
-        }  if (i == 7) {
+        } else if (i == 6 || i == 7) {
             deck[i] = new BonusCard(7, false, 2);
-        }  if (i == 8){
+        } else if (i == 8 || i == 9) {
             deck[i] = new PenaltyCard(8, false, 2);
+        } else {
+            deck[i] = new StandardCard((i % 6) + 1, false);
         }
     }
-
 
     int index = 0;
     for (int i = 0; i < 4; i++) {
@@ -130,6 +126,8 @@ Deck::Deck() {
         }
     }
 }
+
+
 Card& Card::operator=(std::nullptr_t null) {
     value = 0;
     isFaceUp = false;
@@ -221,7 +219,6 @@ Card* Deck::getCard(int row, int col) {
     return nullptr;
 }
 
-
 Game::~Game() {
 }
 void Game::playTurn() {
@@ -230,127 +227,155 @@ void Game::playTurn() {
     std::cout << "\n" << current.getName() << "'s turn!" << std::endl;
     currentPlayer = (currentPlayer == 1) ? 2 : 1;
 }
+void Deck::removeoneCard(int row, int col) {
+    if (row >= 0 && row < 4 && col >= 0 && col < 4) {
+        grid[row][col] = nullptr;
+    }
+}
+void Game::playTwice() {
+    for (int i = 0; i < 1; ++i) {
+        Player& current = (currentPlayer == 1) ? player1 : player2;
+        int row1 = 0, col1=0;
+        int row2, col2;
 
-// void Game::scoring() {
-//     Player& current = (currentPlayer == 1) ? player1 : player2;
-//     int row1, col1;
-//     int row2, col2;
-//
-//     while (true) {
-//         try {
-//             std::cout << "Enter row and column for the first card: ";
-//             std::cin >> row1 >> col1;
-//             if (row1 < 1 || row1 > 4 || col1 < 1 || col1 > 4) {
-//                 throw std::out_of_range("Invalid input. Row and column values must be between 1 and 4.");
-//             }
-//
-//             std::cout << "Enter row and column for the second card: ";
-//             std::cin >> row2 >> col2;
-//             if (row2 < 1 || row2 > 4 || col2 < 1 || col2 > 4) {
-//                 throw std::out_of_range("Invalid input. Row and column values must be between 1 and 4.");
-//             }
-//
-//             Card* card1 = deck.getCard(row1 - 1, col1 - 1);
-//             Card* card2 = deck.getCard(row2 - 1, col2 - 1);
-//
-//             if (card1 == nullptr || card2 == nullptr) {
-//                 std::cout << "One or both of the selected cards have been removed. Please try again." << std::endl;
-//                 continue;
-//             }
-//
-//             if (card1->getIsfaceUp()) {
-//                 std::cout << "The first card is already face up. Please try again." << std::endl;
-//                 continue;
-//             }
-//
-//             if (card2->getIsfaceUp()) {
-//                 std::cout << "The second card is already face up. Please try again." << std::endl;
-//                 continue;
-//             }
-//
-//             if (row1 == row2 && col1 == col2) {
-//                 std::cout << "You have selected the same card twice. Please try again." << std::endl;
-//                 continue;
-//             }
-//
-//             break; // Valid input, exit the loop
-//         } catch (const std::out_of_range& e) {
-//             std::cout << e.what() << std::endl;
-//         } catch (const std::exception& e) {
-//             std::cout << "An error occurred: " << e.what() << std::endl;
-//         }
-//     }
-// // Prompt the current player to press Enter to hide the cards again
-// std::cout << "Press Enter to hide the cards and switch turns...";
-// std::cin.ignore();
-// std::cin.get();
-//
-//     // Flip the first and second cards face-up
-//     deck.flipCard(row1 - 1, col1 - 1, true);
-//     deck.flipCard(row2 - 1, col2 - 1, true);
-//     deck.displayGrid();
-//
-//     Card* card1 = deck.getCard(row1 - 1, col1 - 1);
-//     Card* card2 = deck.getCard(row2 - 1, col2 - 1);
-//
-//     if (card1->getValue() == card2->getValue()) {
-//         std::cout << "It's a match!" << std::endl;
-//
-//         if (dynamic_cast<BonusCard*>(card1) && dynamic_cast<BonusCard*>(card2)) {
-//             int choice;
-//             std::cout << "You have two bonus cards! Choose an option:\n1. +2 points\n2. +1 point and take another turn\n";
-//             std::cin >> choice;
-//             if (choice == 1) {
-//                 current.addScore(2);
-//                 std::cout << "Bonus! +2 points." << std::endl;
-//             } else {
-//                 current.addScore(1);
-//                 std::cout << "Bonus! +1 point. Take another turn." << std::endl;
-//                 playTurn();
-//                 return;
-//             }
-//         } else if (dynamic_cast<PenaltyCard*>(card1) && dynamic_cast<PenaltyCard*>(card2)) {
-//             int choice;
-//             std::cout << "You have two penalty cards! Choose an option:\n1. Lose 2 points\n2. Lose 1 point and skip the next turn\n";
-//             std::cin >> choice;
-//             if (choice == 1) {
-//                 current.deduceScore(2);
-//                 std::cout << "Penalty! -2 points." << std::endl;
-//             } else {
-//                 current.deduceScore(1);
-//                 std::cout << "Penalty! -1 point. Skip the next turn." << std::endl;
-//                 currentPlayer = (currentPlayer == 1) ? 2 : 1;
-//                 return;
-//             }
-//         } else if (dynamic_cast<BonusCard*>(card1) || dynamic_cast<BonusCard*>(card2)) {
-//             current.addScore(1);
-//             std::cout << "Bonus! +1 point." << std::endl;
-//             deck.removeCards(dynamic_cast<BonusCard*>(card1) ? card1 : card2, nullptr);
-//         } else if (dynamic_cast<PenaltyCard*>(card1) || dynamic_cast<PenaltyCard*>(card2)) {
-//             current.deduceScore(1);
-//             std::cout << "Penalty! -1 point." << std::endl;
-//         } else {
-//             current.addScore(1);  // Standard card match, add 1 point
-//             std::cout << "Standard match! +1 point." << std::endl;
-//         }
-//         deck.flipCard(row1 - 1, col1 - 1, true);
-//         deck.flipCard(row2 - 1, col2 - 1, true);
-//         deck.removeCards(card1, card2);
-//     } else {
-//         std::cout << "Not a match!" << std::endl;
-//
-//         // Flip the cards back face-down
-//         deck.flipCard(row1 - 1, col1 - 1, false);
-//         deck.flipCard(row2 - 1, col2 - 1, false);
-//     }
-//     deck.displayGrid();
-//     playTurn();
-// }
+        while (true) {
+            displayPlayerInfo();
+            try {
+                std::cout << "Enter row and column for the first card: ";
+                std::cin >> row1 >> col1;
+                if (row1 < 1 || row1 > 4 || col1 < 1 || col1 > 4) {
+                    throw std::out_of_range("Invalid input. Row and column values must be between 1 and 4.");
+                }
 
+                std::cout << "Enter row and column for the second card: ";
+                std::cin >> row2 >> col2;
+                if (row2 < 1 || row2 > 4 || col2 < 1 || col2 > 4) {
+                    throw std::out_of_range("Invalid input. Row and column values must be between 1 and 4.");
+                }
+
+                Card* card1 = deck.getCard(row1 - 1, col1 - 1);
+                Card* card2 = deck.getCard(row2 - 1, col2 - 1);
+
+                if (card1 == nullptr || card2 == nullptr) {
+                    std::cout << "One or both of the selected cards have been removed. Please try again." << std::endl;
+                    continue;
+                }
+
+                if (card1->getIsfaceUp()) {
+                    std::cout << "The first card is already face up. Please try again." << std::endl;
+                    continue;
+                }
+
+                if (card2->getIsfaceUp()) {
+                    std::cout << "The second card is already face up. Please try again." << std::endl;
+                    continue;
+                }
+
+                if (row1 == row2 && col1 == col2) {
+                    std::cout << "You have selected the same card twice. Please try again." << std::endl;
+                    continue;
+                }
+
+                break; // Valid input, exit the loop
+            } catch (const std::out_of_range& e) {
+                std::cout << e.what() << std::endl;
+            } catch (const std::exception& e) {
+                std::cout << "An error occurred: " << e.what() << std::endl;
+            }
+        }
+
+        // Flip the first and second cards face-up
+        deck.flipCard(row1 - 1, col1 - 1, true);
+        deck.flipCard(row2 - 1, col2 - 1, true);
+        deck.displayGrid();
+
+        Card* card1 = deck.getCard(row1 - 1, col1 - 1);
+        Card* card2 = deck.getCard(row2 - 1, col2 - 1);
+
+        if (card1->getValue() == card2->getValue()) {
+            if ((card1->getValue()==7 && (card2->getValue()>0 ||card2->getValue()<=6  ) ) && (card2->getValue()==7&& (card2->getValue()>0 ||card2->getValue()<=6  )) ) {
+                int choice;
+                std::cout << "You have two bonus cards! Choose an option:\n1. +2 points\n2. +1 point and take another turn\n";
+                std::cin >> choice;
+                if (choice == 1) {
+                    current.addScore(2);
+                    std::cout << "Bonus! +2 points." << std::endl;
+                } else {
+                    current.addScore(1);
+                    std::cout << "Bonus! +1 point. Take another turn." << std::endl;
+                    deck.removeCards(card1, card2);
+                    currentPlayer = (currentPlayer == 1) ? 2 : 1;
+                    currentPlayer = (currentPlayer == 1) ? 2 : 1;
+                    return;
+                }
+                deck.removeCards(card1, card2);
+            } else if ((card1->getValue()==8 && (card2->getValue()>0 ||card2->getValue()<=6  ))  && ( card2->getValue()==8 && (card2->getValue()>0 ||card2->getValue()<=6  )))  {
+                int choice;
+                std::cout << "You have two penalty cards! Choose an option:\n1. Lose 2 points\n2. Lose 1 point and skip the next turn\n";
+                std::cin >> choice;
+                if (choice == 1) {
+                    current.deduceScore(2);
+                    std::cout << "Penalty! -2 points." << std::endl;
+
+                } else {
+                    current.deduceScore(1);
+                    std::cout << "Penalty! -1 point. Skip the next turn." << std::endl;
+                    deck.removeCards(card1, card2);
+                    currentPlayer = (currentPlayer == 1) ? 2 : 1;
+                    playTwice();
+                    return;
+                }
+                deck.removeCards(card1, card2);
+
+            } else {
+                current.addScore(1);  // Standard card match, add 1 point
+                std::cout << "Standard match! +1 point." << std::endl;
+            }
+            deck.removeCards(card1, card2);
+        } else {
+            if ((card1->getValue()==7  && card2->getValue()==8 ) ||
+                (card1->getValue()==8  && card2->getValue()==7 )) {
+                std::cout << "Bonus and Penalty cards revealed. No effect on score." << std::endl;
+                deck.removeCards(card1, card2);
+                }else if ((card1->getValue() == 7 && (card2->getValue() > 0 && card2->getValue() <= 6)) ||
+             (card2->getValue() == 7 && (card1->getValue() > 0 && card1->getValue() <= 6))) {
+                    current.addScore(1);
+                    std::cout << "Bonus! +1 point." << std::endl;
+                    if (card1->getValue() == 7) {
+                        deck.removeoneCard(row1-1, col1-1);
+                        card2->hide();
+                    } else {
+
+                        deck.removeoneCard(row2-1, col2-1);
+                        card1->hide();
+                    }
+             } else if ((card1->getValue() == 8 && (card2->getValue() > 0 && card2->getValue() <= 6)) ||
+                        (card2->getValue() == 8 && (card1->getValue() > 0 && card1->getValue() <= 6))) {
+                 current.deduceScore(1);
+                 std::cout << "Penalty! -1 point." << std::endl;
+                 if (card1->getValue() == 8) {
+                     deck.removeoneCard(row1-1, col1-1);
+                     card2->hide();
+                 } else {
+
+                     deck.removeoneCard(row2-1, col2-1);
+                     card1->hide();
+                 }
+               }else {
+                   std::cout << "Not a match!" << std::endl;
+                   deck.flipCard(row1 - 1, col1 - 1, false);
+                   deck.flipCard(row2 - 1, col2 - 1, false);
+                }
+        }
+        std::cout << "Press Enter to hide the cards and switch turns...";
+        std::cin.ignore();
+        std::cin.get();
+    }
+}
 
 void Game::scoring() {
     Player& current = (currentPlayer == 1) ? player1 : player2;
-    int row1, col1;
+    int row1 = 0, col1=0;
     int row2, col2;
 
     while (true) {
@@ -407,27 +432,93 @@ void Game::scoring() {
     Card* card2 = deck.getCard(row2 - 1, col2 - 1);
 
     if (card1->getValue() == card2->getValue()) {
-        std::cout << "It's a match!" << std::endl;
-        current.addScore(1);  // Standard card match, add 1 point
+        if ((card1->getValue()==7 && (card2->getValue()>0 ||card2->getValue()<=6  ) ) && (card2->getValue()==7&& (card2->getValue()>0 ||card2->getValue()<=6  )) ) {
+            int choice;
+            std::cout << "You have two bonus cards! Choose an option:\n1. +2 points\n2. +1 point and take another turn\n";
+            std::cin >> choice;
+            if (choice == 1) {
+                current.addScore(2);
+                std::cout << "Bonus! +2 points." << std::endl;
+            } else {
+                current.addScore(1);
+                std::cout << "Bonus! +1 point. Take another turn." << std::endl;
+                deck.removeCards(card1, card2);
+                currentPlayer = (currentPlayer == 1) ? 2 : 1;
+                currentPlayer = (currentPlayer == 1) ? 2 : 1;
+                return;
+            }
+            deck.removeCards(card1, card2);
+        } else if ((card1->getValue()==8 && (card2->getValue()>0 ||card2->getValue()<=6  ))  && ( card2->getValue()==8 && (card2->getValue()>0 ||card2->getValue()<=6  )))  {
+            int choice;
+            std::cout << "You have two penalty cards! Choose an option:\n1. Lose 2 points\n2. Lose 1 point and skip the next turn\n";
+            std::cin >> choice;
+            if (choice == 1) {
+                current.deduceScore(2);
+                std::cout << "Penalty! -2 points." << std::endl;
+
+            } else {
+                current.deduceScore(1);
+                std::cout << "Penalty! -1 point. Skip the next turn." << std::endl;
+                deck.removeCards(card1, card2);
+                currentPlayer = (currentPlayer == 1) ? 2 : 1;
+                playTwice();
+                return;
+            }
+            deck.removeCards(card1, card2);
+
+        } else {
+            current.addScore(1);  // Standard card match, add 1 point
+            std::cout << "Standard match! +1 point." << std::endl;
+        }
         deck.removeCards(card1, card2);
     } else {
-        std::cout << "Not a match!" << std::endl;
+        if ((card1->getValue()==7  && card2->getValue()==8 ) ||
+            (card1->getValue()==8  && card2->getValue()==7 )) {
+            std::cout << "Bonus and Penalty cards revealed. No effect on score." << std::endl;
+            deck.removeCards(card1, card2);
+            }else if ((card1->getValue() == 7 && (card2->getValue() > 0 && card2->getValue() <= 6)) ||
+         (card2->getValue() == 7 && (card1->getValue() > 0 && card1->getValue() <= 6))) {
+                current.addScore(1);
+                std::cout << "Bonus! +1 point." << std::endl;
+                if (card1->getValue() == 7) {
+                    deck.removeoneCard(row1-1, col1-1);
+                    card2->hide();
+                } else {
+
+                    deck.removeoneCard(row2-1, col2-1);
+                    card1->hide();
+                }
+         } else if ((card1->getValue() == 8 && (card2->getValue() > 0 && card2->getValue() <= 6)) ||
+                    (card2->getValue() == 8 && (card1->getValue() > 0 && card1->getValue() <= 6))) {
+             current.deduceScore(1);
+             std::cout << "Penalty! -1 point." << std::endl;
+             if (card1->getValue() == 8) {
+                 deck.removeoneCard(row1-1, col1-1);
+                 card2->hide();
+             } else {
+
+                 deck.removeoneCard(row2-1, col2-1);
+                 card1->hide();
+             }
+           }else {
+            std::cout << "Not a match!" << std::endl;
+            deck.flipCard(row1 - 1, col1 - 1, false);
+            deck.flipCard(row2 - 1, col2 - 1, false);
+        }
     }
 
-    // Prompt the current player to press Enter to hide the cards again
+    // Prompt the current player to press Enter to hide the cards and switch turns
     std::cout << "Press Enter to hide the cards and switch turns...";
     std::cin.ignore();
     std::cin.get();
+    currentPlayer = (currentPlayer == 1) ? 2 : 1;
 
-    // Flip the cards back face-down
-    deck.flipCard(row1 - 1, col1 - 1, false);
-    deck.flipCard(row2 - 1, col2 - 1, false);
     deck.displayGrid();
 
     // Switch turns between the two players
-    currentPlayer = (currentPlayer == 1) ? 2 : 1;
-}
 
+
+}
 void Game::initializeGame() {
     std::cout << "Welcome to the 2D Card Matching Game!" << std::endl;
 
@@ -436,6 +527,7 @@ void Game::initializeGame() {
 
     std::cout << "\nInitial Card Grid:" << std::endl;
     deck.displayGrid();
+
 
 }
 
@@ -468,8 +560,9 @@ bool Deck::allCardsFlipped() {
 }
 void Game::start() {
     initializeGame();
+
     while (true) {
-        displayScores();
+        displayPlayerInfo();
         scoring();
         if (deck.allCardsFlipped()) {
             std::cout << "All cards have been matched. The game has ended!" << std::endl;
