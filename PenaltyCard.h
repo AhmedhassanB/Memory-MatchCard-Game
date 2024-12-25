@@ -1,4 +1,3 @@
-
 #ifndef MEMORY_MATCHCARD_GAME_PENALTYCARD_H
 #define MEMORY_MATCHCARD_GAME_PENALTYCARD_H
 #include <bits/stdc++.h>

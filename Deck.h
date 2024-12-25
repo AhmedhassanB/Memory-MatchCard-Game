@@ -1,14 +1,9 @@
-
 #ifndef MEMORY_MATCHCARD_GAME_DECK_H
 #define MEMORY_MATCHCARD_GAME_DECK_H
 #include "Card.h"
 #include <ctime>
 using namespace std;
 class Deck{
-private:
-
-    // Card** cards;
-    // int size;
     Card** grid;
     Card**deck;
 
