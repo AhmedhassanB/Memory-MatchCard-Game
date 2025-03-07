@@ -89,4 +89,4 @@ Combination Rules:
 
 Bonus and Penalty cards neutralize each other's effects when paired.
 Memory Management
-The game dynamically allocates memory for cards and ensures proper cleanup after each game session to avoid memory leaks.
+The game dynamically allocates memory for cards and ensures proper cleanup after each game session to avoid memory leaks..
