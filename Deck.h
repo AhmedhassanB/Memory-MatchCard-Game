@@ -22,6 +22,8 @@ public:
     void flipCard(int row, int col, bool faceUp);
     Card *getCard(int row, int col);
 
+    void removeoneCard(int row, int col);
+
     bool allCardsFlipped();
 
     void removeCards(Card *c1 , Card *c2);

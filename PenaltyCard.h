@@ -25,4 +25,5 @@ public:
     int getPenaltyPoints() const { return penaltyPoints; }
 
 };
+
 #endif

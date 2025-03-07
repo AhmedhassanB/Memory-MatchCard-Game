@@ -12,6 +12,9 @@ public:
     void playTurn();
     void displayScores();
     void start();
+
+    void playTwice();
+
     void scoring();
     void displayPlayerInfo();
 
